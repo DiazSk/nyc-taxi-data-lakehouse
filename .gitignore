@@ -35,6 +35,12 @@ terraform.rc
 data/
 raw-data/
 processed-data/
+nyc_yellow_taxi_dataset/
+test_data/
+
+# Windows dev setup
+hadoop_home/
+winutils/
 
 # AWS credentials
 .aws/
