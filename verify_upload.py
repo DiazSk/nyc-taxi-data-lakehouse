@@ -27,5 +27,5 @@ def list_s3_bucket_contents(bucket_name):
         print(f"Error listing bucket contents: {e}")
 
 if __name__ == "__main__":
-    BUCKET_NAME = "nyc-taxi-data-lake-p7laxsjo"
+    BUCKET_NAME = "nyc-taxi-data-lake-ygzcn2t2"
     list_s3_bucket_contents(BUCKET_NAME)

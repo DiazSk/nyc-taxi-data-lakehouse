@@ -65,7 +65,7 @@ def upload_directory_to_s3(directory, bucket, s3_prefix="raw-data"):
     return successful, failed
 
 if __name__ == "__main__":
-    BUCKET_NAME = "nyc-taxi-data-lake-p7laxsjo"
+    BUCKET_NAME = "nyc-taxi-data-lake-ygzcn2t2"
     DATA_DIRECTORY = "nyc_yellow_taxi_dataset"
     
     print(f"Starting batch upload to s3://{BUCKET_NAME}/raw-data/\n")
