@@ -39,6 +39,9 @@ processed-data/
 nyc_yellow_taxi_dataset/
 test_data/
 
+# Airflow logs
+logs/
+
 # Windows dev setup
 hadoop_home/
 winutils/
