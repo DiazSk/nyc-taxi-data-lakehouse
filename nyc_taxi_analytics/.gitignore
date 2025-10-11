@@ -1,0 +1,25 @@
+# dbt runtime / build artifacts
+target/
+run/
+logs/
+
+# vendored packages (recreate with `dbt deps`)
+dbt_packages/
+
+# local DuckDB file (binary, likely large)
+nyc_taxi.duckdb
+nyc_taxi.duckdb.wal
+
+# local env / caches
+.env
+*.log
+*.pyc
+__pycache__/
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db

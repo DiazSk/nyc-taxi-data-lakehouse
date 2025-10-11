@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: stg_taxi_trips
+    description: Staging table for taxi trips
+    columns:
+      - name: trip_distance
+        description: Distance traveled in miles
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              config:
+                severity: warn
+              arguments:
+                min_value: 0
+                max_value: 100
+      
+      - name: trip_duration_minutes
+        description: Trip duration in minutes
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              config:
+                severity: warn
+              arguments:
+                min_value: 0
+                max_value: 1440
+      
+      - name: passenger_count
+        description: Number of passengers
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7, 8]
+              severity: warn
+      
+      - name: tpep_pickup_datetime
+        description: Pickup datetime
+        tests:
+          - not_null
+      
+      - name: tpep_dropoff_datetime
+        description: Dropoff datetime
+        tests:
+          - not_null
