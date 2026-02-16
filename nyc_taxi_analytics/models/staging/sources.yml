@@ -2,13 +2,15 @@ version: 2
 
 sources:
   - name: raw_taxi_data
-    description: Processed NYC taxi data from S3
+    description: >
+      Processed NYC taxi data from S3.
+      Configure the bucket name via dbt variable: --vars '{s3_bucket: your-bucket-name}'
     meta:
-      external_location: "s3://nyc-taxi-data-lake-ygzcn2t2/processed-data/**/*.parquet"
+      external_location: "s3://{{ var('s3_bucket', 'nyc-taxi-data-lake') }}/processed-data/**/*.parquet"
     
     tables:
       - name: trips
         description: Processed taxi trip records
         external:
-          location: "s3://nyc-taxi-data-lake-ygzcn2t2/processed-data/**/*.parquet"
+          location: "s3://{{ var('s3_bucket', 'nyc-taxi-data-lake') }}/processed-data/**/*.parquet"
           file_format: parquet
