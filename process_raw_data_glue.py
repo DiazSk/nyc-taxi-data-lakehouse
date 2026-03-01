@@ -153,7 +153,7 @@ try:
 
     # Data Cleaning and Transformation
     
-    # 1. Handle missing values in critical columns
+    # Filter out rows missing critical fields
     print(f"[{datetime.now()}] Filtering out records with null critical fields...")
     df = df.filter(
         col("tpep_pickup_datetime").isNotNull() &
@@ -165,7 +165,7 @@ try:
     after_null_filter = df.count()
     print(f"[{datetime.now()}] Records after null filter: {after_null_filter:,} (removed {initial_count - after_null_filter:,})")
 
-    # 2. Derive trip duration (in minutes)
+    # Derive trip duration in minutes
     print(f"[{datetime.now()}] Calculating trip duration...")
     df = df.withColumn(
         "trip_duration_minutes",
@@ -175,7 +175,7 @@ try:
         ) / 60.0
     )
 
-    # 3. Determine valid year range from the file names
+    # Determine the valid year range from file names
     #    Extract years from filenames like yellow_tripdata_2022-01.parquet
     current_year = datetime.now().year
     file_years = set()
@@ -192,7 +192,7 @@ try:
     max_valid_year = max(max(file_years), current_year) if file_years else current_year
     print(f"[{datetime.now()}] Valid year range from filenames: {min_valid_year}-{max_valid_year}")
     
-    # 4. Data Quality Filters
+    # Apply data quality filters
     print(f"[{datetime.now()}] Applying data quality filters...")
     df = df.filter(
         (col("trip_duration_minutes") > 0) &
@@ -210,7 +210,7 @@ try:
     after_quality_filter = df.count()
     print(f"[{datetime.now()}] Records after quality filters: {after_quality_filter:,} (removed {after_null_filter - after_quality_filter:,})")
 
-    # 4. Add additional useful columns
+    # Add derived metrics
     print(f"[{datetime.now()}] Adding derived columns...")
     df = df.withColumn("avg_speed_mph", 
         when(col("trip_duration_minutes") > 0, 
@@ -218,12 +218,12 @@ try:
         .otherwise(0)
     )
 
-    # 5. Create partitioning columns
+    # Create partitioning columns
     print(f"[{datetime.now()}] Creating partition columns...")
     df = df.withColumn("year", year(col("tpep_pickup_datetime")))
     df = df.withColumn("month", month(col("tpep_pickup_datetime")))
 
-    # 6. Write the processed data to S3, partitioned by year and month
+    # Write processed data to S3 partitioned by year and month
     print(f"[{datetime.now()}] Writing processed data to {args['output_path']}...")
     final_count = df.count()
     print(f"[{datetime.now()}] Final record count to write: {final_count:,}")

@@ -103,7 +103,7 @@ with DAG(
     },
 ) as dag:
 
-    # ── Task 1: Wait for raw data to be available in S3 ─────────────────────
+    # ── Wait for raw data availability in S3 ────────────────────────────────
     sense_raw_data = S3KeySensor(
         task_id="sense_raw_data",
         bucket_name=S3_BUCKET,
@@ -115,7 +115,7 @@ with DAG(
         mode="poke",
     )
 
-    # ── Task 2: Trigger the AWS Glue job (don't wait - use sensor instead) ──
+    # ── Trigger the AWS Glue job (non-blocking) ─────────────────────────────
     trigger_glue_job = GlueJobOperator(
         task_id="trigger_glue_job",
         job_name=GLUE_JOB_NAME,
@@ -129,7 +129,7 @@ with DAG(
         verbose=True,
     )
 
-    # ── Task 2b: Wait for Glue job to complete ────────────────────────────────
+    # ── Wait for Glue job completion ─────────────────────────────────────────
     wait_for_glue_job = GlueJobSensor(
         task_id="wait_for_glue_job",
         job_name=GLUE_JOB_NAME,
@@ -139,13 +139,13 @@ with DAG(
         poke_interval=60,  # Check every 60 seconds
     )
 
-    # ── Task 3: Verify processed data exists in S3 ──────────────────────────
+    # ── Verify processed data exists in S3 ──────────────────────────────────
     verify_processed_output = PythonOperator(
         task_id="verify_processed_output",
         python_callable=verify_processed_data,
     )
 
-    # ── Task 4: Log pipeline summary ────────────────────────────────────────
+    # ── Log pipeline run summary ────────────────────────────────────────────
     pipeline_summary = PythonOperator(
         task_id="pipeline_summary",
         python_callable=log_pipeline_summary,

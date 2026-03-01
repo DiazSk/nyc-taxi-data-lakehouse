@@ -9,24 +9,7 @@ A production-ready data engineering solution featuring cloud-based batch process
 
 This project implements a **Lakehouse Architecture** on AWS with raw and processed data layers:
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           NYC Taxi Data Platform                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌───────────┐ │
-│  │   Raw Data   │───▶│  AWS Glue    │───▶│  Processed   │───▶│    dbt    │ │
-│  │   (Parquet)  │    │  (PySpark)   │    │    Data      │    │  (DuckDB) │ │
-│  └──────────────┘    └──────────────┘    └──────────────┘    └───────────┘ │
-│         │                   │                   │                   │       │
-│         ▼                   ▼                   ▼                   ▼       │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌───────────┐ │
-│  │ S3: raw-data │    │   Airflow    │    │ S3: processed│    │  marimo   │ │
-│  │              │    │  Orchestrator│    │   -data      │    │ Dashboard │ │
-│  └──────────────┘    └──────────────┘    └──────────────┘    └───────────┘ │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+![Architecture Diagram](architecture_diagram.png)
 
 1. **Raw Layer**: Original Parquet files from NYC TLC stored in S3 `raw-data/` prefix
 2. **Processed Layer**: Cleaned, validated data partitioned by `year/month` in S3 `processed-data/`
@@ -204,7 +187,7 @@ real-time-NYC-taxi-data-platform/
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/zaid-ahmad-shaikhh/real-time-NYC-taxi-data-platform.git
+git clone https://github.com/DiazSk/nyc-taxi-data-lakehouse.git
 cd real-time-NYC-taxi-data-platform
 
 # 2. Create virtual environment

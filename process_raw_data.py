@@ -26,12 +26,12 @@ def process_taxi_data(spark, input_path, output_path):
 
         # Data Cleaning and Transformation
 
-        # 1. Standardize column names (lowercase, replace spaces with underscores)
+        # Standardize column names (lowercase, replace spaces with underscores)
         print(f"[{datetime.now()}] Standardizing column names...")
         standardized_columns = [c.lower().replace(" ", "_") for c in df.columns]
         df = df.toDF(*standardized_columns)
 
-        # 2. Handle missing values in critical columns
+        # Filter out rows missing critical fields
         print(f"[{datetime.now()}] Filtering out records with null critical fields...")
         df = df.filter(
             col("tpep_pickup_datetime").isNotNull() &
@@ -43,7 +43,7 @@ def process_taxi_data(spark, input_path, output_path):
         after_null_filter = df.count()
         print(f"[{datetime.now()}] Records after null filter: {after_null_filter:,} (removed {initial_count - after_null_filter:,})")
 
-        # 3. Derive trip duration (in minutes)
+        # Derive trip duration in minutes
         # Timestamps are already in timestamp format in parquet, no need for to_timestamp()
         print(f"[{datetime.now()}] Calculating trip duration...")
         df = df.withColumn(
@@ -51,7 +51,7 @@ def process_taxi_data(spark, input_path, output_path):
             ((col("tpep_dropoff_datetime").cast("long") - col("tpep_pickup_datetime").cast("long")) / 60.0)
         )
 
-        # 4. Data Quality Filters
+        # Apply data quality filters
         print(f"[{datetime.now()}] Applying data quality filters...")
         df = df.filter(
             (col("trip_duration_minutes") > 0) &  # Remove negative/zero durations
@@ -65,7 +65,7 @@ def process_taxi_data(spark, input_path, output_path):
         after_quality_filter = df.count()
         print(f"[{datetime.now()}] Records after quality filters: {after_quality_filter:,} (removed {after_null_filter - after_quality_filter:,})")
 
-        # 5. Add additional useful columns
+        # Add derived metrics
         print(f"[{datetime.now()}] Adding derived columns...")
         df = df.withColumn("avg_speed_mph", 
             when(col("trip_duration_minutes") > 0, 
@@ -73,12 +73,12 @@ def process_taxi_data(spark, input_path, output_path):
             .otherwise(0)
         )
 
-        # 6. Create partitioning columns
+        # Create partitioning columns
         print(f"[{datetime.now()}] Creating partition columns...")
         df = df.withColumn("year", year(col("tpep_pickup_datetime")))
         df = df.withColumn("month", month(col("tpep_pickup_datetime")))
 
-        # 7. Select final columns (exclude partition columns from data to avoid redundancy)
+        # Select final columns (exclude partition columns from data to avoid redundancy)
         # Note: Spark will still use them for partitioning, but they won't be duplicated in parquet files
         final_columns = [c for c in df.columns if c not in ["year", "month"]]
         df_final = df.select(final_columns + ["year", "month"])
